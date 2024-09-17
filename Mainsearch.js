@@ -6,49 +6,33 @@ const ONDC_SEARCH_URL = "https://staging.gateway.proteantech.in/search";
 const makeSearchRequest = async () => {
   try {
     // Use Unix timestamp format for the timestamp field
-    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const timestamp = Date()
+    console.log('timestamp:',timestamp)
     
     const requestPayload = {
-      context: {
-        domain: "ONDC:RET10",
-        action: "search",
-        country: "IND",
-        city: "std:080",
-        core_version: "1.2.0",
-        bap_id: "ondc.howincloud.com",
-        bap_uri: "https://ondc.howincloud.com",
-        transaction_id: "T1",
-        message_id: "M1",
-        timestamp: timestamp,
-        ttl: "PT30S",
-      },
-      message: {
-        intent: {
-          category: { id: "Foodgrains" },
-          fulfillment: { type: "Delivery" },
-          payment: {
-            "@ondc/org/buyer_app_finder_fee_type": "percent",
-            "@ondc/org/buyer_app_finder_fee_amount": "3",
-          },
-          tags: [
-            {
-              code: "bap_terms",
-              list: [
-                { code: "static_terms", value: "" },
-                {
-                  code: "static_terms_new",
-                  value:
-                    "https://github.com/ONDC-Official/NP-Static-Terms/buyerNP_BNP/1.0/tc.pdf",
-                },
-                {
-                  code: "effective_date",
-                  value: "2023-10-01T00:00:00.000Z",
-                },
-              ],
-            },
-          ],
+      
+        "context": {
+            "domain": "ONDC:RET11",
+            "action": "search",
+            "country": "IND",
+            "city": "std:080",
+            "core_version": "1.2.0",
+            "bap_id": process.env.BAP_ID,
+            "bap_uri": process.env.BAP_URL,
+            "transaction_id": "04df37ca-6745-4c97-822a-7b6790228675",
+            "message_id": "fa4d983d-91bf-4b32-8d09-8f1c6632cf31",
+            "timestamp": timestamp,
+            "ttl": "PT3600S"
         },
-      },
+        "message": {
+            "intent": {
+                "payment": {
+                    "@ondc/org/buyer_app_finder_fee_type": "percent",
+                    "@ondc/org/buyer_app_finder_fee_amount": "6"
+                }
+            }
+        }
+    
     };
 
     // Create the authorization header

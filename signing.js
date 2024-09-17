@@ -9,7 +9,8 @@ export const createSigningString = async (message, created, expires) => {
 
   // Default to current timestamp if not provided
   if (!created) created = Math.floor(Date.now() / 1000).toString();
-  if (!expires) expires = (parseInt(created) + 3600).toString(); // Expiration after 1 hour
+  if (!expires) expires = (parseInt(created) + (1 * 60 * 60)).toString();
+  console.log("diff:",expires-created)
 
   // Hash the message using BLAKE2b
   const digest = sodium.crypto_generichash(64, sodium.from_string(message));
