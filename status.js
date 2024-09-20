@@ -1,18 +1,18 @@
 import axios from "axios";
-import { createAuthorizationHeader } from "./signing.js"; // Adjust import path as needed
-import { v4 as uuidv4 } from "uuid"; // To generate unique IDs
+import { createAuthorizationHeader } from "./cryptic.js"; // Adjust import path as needed
+import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const ONDC_SEARCH_URL = "https://staging.gateway.proteantech.in/search";
+// Set the ONDC confirm endpoint
+const ONDC_CONFIRM_URL = "https://ondcpreprod.sellerapp.in/bpp/u/status";
 
-// Helper function to get current timestamp in Unix format and ISO 8601
 const getUnixTimestamp = () => Math.floor(Date.now() / 1000);
 const getISOTimestamp = (unixTimestamp) =>
   new Date(unixTimestamp * 1000).toISOString();
 
-const makeSearchRequest = async () => {
+const makeConfirmRequest = async () => {
   try {
     // Generate unique transaction and message IDs
     const transactionId = uuidv4();
@@ -25,28 +25,25 @@ const makeSearchRequest = async () => {
     console.log("Timestamp (ISO):", isoTimestamp);
     console.log("Timestamp (Unix):", unixTimestamp);
 
-    // Prepare the request payload
+    // Prepare the request payload for the confirm API call
     const requestPayload = {
       context: {
-        domain: "ONDC:RET11",
-        action: "search",
-        country: "IND",
-        city: "std:080",
+        domain: "ONDC:RET10",
+        action: "status",
         core_version: "1.2.0",
         bap_id: process.env.BAP_ID,
         bap_uri: process.env.BAP_URL,
-        transaction_id: transactionId,
+        bpp_id: "ondcpreprod.sellerapp.in",
+        bpp_uri: "https://ondcpreprod.sellerapp.in/bpp/u",
+        transaction_id: "t123",
         message_id: messageId,
-        timestamp: isoTimestamp, // ISO 8601 format in the payload
-        ttl: "P1M", // 1-hour TTL in ISO 8601 duration format
+        city: "std:080",
+        country: "IND",
+        timestamp: isoTimestamp,
+        ttl: "P1M",
       },
       message: {
-        intent: {
-          payment: {
-            "@ondc/org/buyer_app_finder_fee_type": "percent",
-            "@ondc/org/buyer_app_finder_fee_amount": "6",
-          },
-        },
+        order_id: "2024-09-20-11111",
       },
     };
 
@@ -61,16 +58,17 @@ const makeSearchRequest = async () => {
     // Log the generated Authorization header for debugging
     console.log("Authorization Header:", authorizationHeader);
 
-    // Send the POST request to the ONDC search API
-    const response = await axios.post(ONDC_SEARCH_URL, requestPayload, {
+    // Send the POST request to the ONDC confirm API
+    const response = await axios.post(ONDC_CONFIRM_URL, requestPayload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: authorizationHeader,
+        "X-Gateway-Authorization": authorizationHeader,
       },
     });
 
     // Log the successful response
-    console.log("Search response:", response.data);
+    console.log("Confirm response:", response.data);
   } catch (error) {
     if (error.response) {
       // Handle errors returned from the API
@@ -85,5 +83,5 @@ const makeSearchRequest = async () => {
   }
 };
 
-// Execute the search request
-makeSearchRequest();
+// Execute the confirm request
+makeConfirmRequest();

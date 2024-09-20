@@ -1,18 +1,18 @@
 import axios from "axios";
-import { createAuthorizationHeader } from "./signing.js"; // Adjust import path as needed
-import { v4 as uuidv4 } from "uuid"; // To generate unique IDs
+import { createAuthorizationHeader } from "./cryptic.js"; // Adjust import path as needed
+import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const ONDC_SEARCH_URL = "https://staging.gateway.proteantech.in/search";
+// Set the ONDC select endpoint
+const ONDC_SELECT_URL = "https://ondcpreprod.sellerapp.in/bpp/u/select";
 
-// Helper function to get current timestamp in Unix format and ISO 8601
 const getUnixTimestamp = () => Math.floor(Date.now() / 1000);
 const getISOTimestamp = (unixTimestamp) =>
   new Date(unixTimestamp * 1000).toISOString();
 
-const makeSearchRequest = async () => {
+const makeSelectRequest = async () => {
   try {
     // Generate unique transaction and message IDs
     const transactionId = uuidv4();
@@ -25,34 +25,64 @@ const makeSearchRequest = async () => {
     console.log("Timestamp (ISO):", isoTimestamp);
     console.log("Timestamp (Unix):", unixTimestamp);
 
-    // Prepare the request payload
+    // Prepare the request payload with the specific item data
     const requestPayload = {
       context: {
-        domain: "ONDC:RET11",
-        action: "search",
+        domain: "ONDC:RET10",
+        action: "select",
         country: "IND",
         city: "std:080",
         core_version: "1.2.0",
         bap_id: process.env.BAP_ID,
+        bpp_id: "ondcpreprod.sellerapp.in",
+        bpp_uri: "https://ondcpreprod.sellerapp.in/bpp/u",
         bap_uri: process.env.BAP_URL,
         transaction_id: transactionId,
         message_id: messageId,
-        timestamp: isoTimestamp, // ISO 8601 format in the payload
-        ttl: "P1M", // 1-hour TTL in ISO 8601 duration format
+        timestamp: isoTimestamp,
+        ttl: "PT1M", // Time to live for the message
       },
       message: {
-        intent: {
-          payment: {
-            "@ondc/org/buyer_app_finder_fee_type": "percent",
-            "@ondc/org/buyer_app_finder_fee_amount": "6",
+        order: {
+          items: [
+            {
+              id: "5b9566b3305b1db6",
+              parent_item_id: "3f81a2c18a60c01d",
+              quantity: {
+                count: 1,
+              },
+              location_id: "HOMEB-1000",
+            },
+          ],
+          provider: {
+            id: "slrp-1355789",
+            locations: [
+              {
+                id: "HOMEB-1000",
+              },
+            ],
           },
+          fulfillments: [
+            {
+              end: {
+                location: {
+                  gps: "12.970557,77.6448023",
+                  address: {
+                    area_code: "560038",
+                  },
+                },
+              },
+            },
+          ],
         },
       },
     };
 
     // Ensure environment variables are present
     if (!process.env.BAP_ID || !process.env.BAP_URL) {
-      throw new Error("Missing BAP_ID or BAP_URL in environment variables");
+      throw new Error(
+        "Missing BAP_ID, BAP_URL, BPP_ID or BPP_URL in environment variables"
+      );
     }
 
     // Create the Authorization header using the message part of the payload
@@ -61,16 +91,17 @@ const makeSearchRequest = async () => {
     // Log the generated Authorization header for debugging
     console.log("Authorization Header:", authorizationHeader);
 
-    // Send the POST request to the ONDC search API
-    const response = await axios.post(ONDC_SEARCH_URL, requestPayload, {
+    // Send the POST request to the ONDC select API
+    const response = await axios.post(ONDC_SELECT_URL, requestPayload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: authorizationHeader,
+        "X-Gateway-Authorization": authorizationHeader,
       },
     });
 
     // Log the successful response
-    console.log("Search response:", response.data);
+    console.log("Select response:", response.data);
   } catch (error) {
     if (error.response) {
       // Handle errors returned from the API
@@ -85,5 +116,5 @@ const makeSearchRequest = async () => {
   }
 };
 
-// Execute the search request
-makeSearchRequest();
+// Execute the select request
+makeSelectRequest();

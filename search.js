@@ -1,13 +1,12 @@
 import axios from "axios";
-import { createAuthorizationHeader } from "./signing.js"; // Adjust import path as needed
-import { v4 as uuidv4 } from "uuid"; // To generate unique IDs
+import { createAuthorizationHeader } from "./cryptic.js"; // Adjust import path as needed
+import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const ONDC_SEARCH_URL = "https://staging.gateway.proteantech.in/search";
+const ONDC_SEARCH_URL = "https://ondcpreprod.sellerapp.in/bpp/u/search";
 
-// Helper function to get current timestamp in Unix format and ISO 8601
 const getUnixTimestamp = () => Math.floor(Date.now() / 1000);
 const getISOTimestamp = (unixTimestamp) =>
   new Date(unixTimestamp * 1000).toISOString();
@@ -28,23 +27,31 @@ const makeSearchRequest = async () => {
     // Prepare the request payload
     const requestPayload = {
       context: {
-        domain: "ONDC:RET11",
+        domain: "ONDC:RET10",
         action: "search",
         country: "IND",
         city: "std:080",
         core_version: "1.2.0",
         bap_id: process.env.BAP_ID,
         bap_uri: process.env.BAP_URL,
+        bpp_id: "ondcpreprod.sellerapp.in",
+        bpp_uri: "https://ondcpreprod.sellerapp.in/bpp/u",
         transaction_id: transactionId,
         message_id: messageId,
-        timestamp: isoTimestamp, // ISO 8601 format in the payload
-        ttl: "P1M", // 1-hour TTL in ISO 8601 duration format
+        timestamp: isoTimestamp,
+        ttl: "P1M", // Time to live for the message
       },
       message: {
         intent: {
+          category: {
+            id: "Foodgrains",
+          },
+          fulfillment: {
+            type: "Delivery", // Specifies delivery method for retail
+          },
           payment: {
             "@ondc/org/buyer_app_finder_fee_type": "percent",
-            "@ondc/org/buyer_app_finder_fee_amount": "6",
+            "@ondc/org/buyer_app_finder_fee_amount": "3",
           },
         },
       },
@@ -66,6 +73,7 @@ const makeSearchRequest = async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: authorizationHeader,
+        "X-Gateway-Authorization": authorizationHeader,
       },
     });
 
