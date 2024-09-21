@@ -5,14 +5,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Set the ONDC select endpoint
-const ONDC_SELECT_URL = "https://ondcpreprod.sellerapp.in/bpp/u/select";
+// Set the ONDC confirm endpoint
+const ONDC_CONFIRM_URL = "https://ondcpreprod.sellerapp.in/bpp/u/track";
 
 const getUnixTimestamp = () => Math.floor(Date.now() / 1000);
 const getISOTimestamp = (unixTimestamp) =>
   new Date(unixTimestamp * 1000).toISOString();
 
-const makeSelectRequest = async () => {
+const makeConfirmRequest = async () => {
   try {
     // Generate unique transaction and message IDs
     const transactionId = uuidv4();
@@ -25,64 +25,31 @@ const makeSelectRequest = async () => {
     console.log("Timestamp (ISO):", isoTimestamp);
     console.log("Timestamp (Unix):", unixTimestamp);
 
-    // Prepare the request payload with the specific item data
+    // Prepare the request payload for the confirm API call
     const requestPayload = {
       context: {
         domain: "ONDC:RET10",
-        action: "select",
-        country: "IND",
-        city: "std:080",
+        action: "track",
         core_version: "1.2.0",
         bap_id: process.env.BAP_ID,
-        bpp_id: "preprod-sellerapp.shiprocket.com",
-        bpp_uri: "https://preprod-sellerapp.shiprocket.com/shiprocket",
         bap_uri: process.env.BAP_URL,
-        transaction_id: transactionId,
+        bpp_id: "ondcpreprod.sellerapp.in",
+        bpp_uri: "https://ondcpreprod.sellerapp.in/bpp/u",
+        transaction_id: "t123",
         message_id: messageId,
+        city: "std:080",
+        country: "IND",
         timestamp: isoTimestamp,
-        ttl: "PT1M", // Time to live for the message
+        ttl: "P1M",
       },
       message: {
-        order: {
-          items: [
-            {
-              id: "5b9566b3305b1db6",
-              parent_item_id: "3f81a2c18a60c01d",
-              quantity: {
-                count: 1,
-              },
-              location_id: "HOMEB-1000",
-            },
-          ],
-          provider: {
-            id: "slrp-1355789",
-            locations: [
-              {
-                id: "HOMEB-1000",
-              },
-            ],
-          },
-          fulfillments: [
-            {
-              end: {
-                location: {
-                  gps: "12.970557,77.6448023",
-                  address: {
-                    area_code: "560038",
-                  },
-                },
-              },
-            },
-          ],
-        },
+        order_id: "2024-09-20",
       },
     };
 
     // Ensure environment variables are present
     if (!process.env.BAP_ID || !process.env.BAP_URL) {
-      throw new Error(
-        "Missing BAP_ID, BAP_URL, BPP_ID or BPP_URL in environment variables"
-      );
+      throw new Error("Missing BAP_ID or BAP_URL in environment variables");
     }
 
     // Create the Authorization header using the message part of the payload
@@ -91,8 +58,8 @@ const makeSelectRequest = async () => {
     // Log the generated Authorization header for debugging
     console.log("Authorization Header:", authorizationHeader);
 
-    // Send the POST request to the ONDC select API
-    const response = await axios.post(ONDC_SELECT_URL, requestPayload, {
+    // Send the POST request to the ONDC confirm API
+    const response = await axios.post(ONDC_CONFIRM_URL, requestPayload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: authorizationHeader,
@@ -101,7 +68,7 @@ const makeSelectRequest = async () => {
     });
 
     // Log the successful response
-    console.log("Select response:", response.data);
+    console.log("Confirm response:", response.data);
   } catch (error) {
     if (error.response) {
       // Handle errors returned from the API
@@ -116,5 +83,5 @@ const makeSelectRequest = async () => {
   }
 };
 
-// Execute the select request
-makeSelectRequest();
+// Execute the confirm request
+makeConfirmRequest();

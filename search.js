@@ -5,7 +5,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ONDC_SEARCH_URL = "https://ondcpreprod.sellerapp.in/bpp/u/search";
+const ONDC_SEARCH_URL =
+  "https://preprod-sellerapp.shiprocket.com/shiprocket/search";
 
 const getUnixTimestamp = () => Math.floor(Date.now() / 1000);
 const getISOTimestamp = (unixTimestamp) =>
@@ -27,15 +28,15 @@ const makeSearchRequest = async () => {
     // Prepare the request payload
     const requestPayload = {
       context: {
-        domain: "ONDC:RET10",
+        domain: "nic2004:52110",
         action: "search",
         country: "IND",
-        city: "std:080",
+        city: "*",
         core_version: "1.2.0",
         bap_id: process.env.BAP_ID,
         bap_uri: process.env.BAP_URL,
-        bpp_id: "ondcpreprod.sellerapp.in",
-        bpp_uri: "https://ondcpreprod.sellerapp.in/bpp/u",
+        bpp_id: "preprod-sellerapp.shiprocket.com",
+        bpp_uri: "https://preprod-sellerapp.shiprocket.com/shiprocket",
         transaction_id: transactionId,
         message_id: messageId,
         timestamp: isoTimestamp,
@@ -43,12 +44,6 @@ const makeSearchRequest = async () => {
       },
       message: {
         intent: {
-          category: {
-            id: "Foodgrains",
-          },
-          fulfillment: {
-            type: "Delivery", // Specifies delivery method for retail
-          },
           payment: {
             "@ondc/org/buyer_app_finder_fee_type": "percent",
             "@ondc/org/buyer_app_finder_fee_amount": "3",
