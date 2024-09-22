@@ -2,12 +2,12 @@ import axios from "axios";
 import { createAuthorizationHeader } from "./cryptic.js";
 import dotenv from "dotenv";
 dotenv.config();
-const ONDC_SEARCH_URL = (await import('./Url/SellerUrl.js')).default;
+const ONDC_SEARCH_URL = (await import('./Url/PREPRODURL.js')).default;
 const ONDC_DOMAINS=(await import("./Url/Domain.js")).default.SEARCH;
 console.log(ONDC_SEARCH_URL,ONDC_DOMAINS)
 const makeSearchRequest = async () => {
   try {
-    const requestPayload = (await import('./Schema/search.js')).default
+    const requestPayload = (await import('./Schema/Preprod/search.js')).default
     console.log(requestPayload)
     if (!process.env.BAP_ID || !process.env.BAP_URL) {
       throw new Error("Missing BAP_ID or BAP_URL in environment variables");
