@@ -1,5 +1,6 @@
 const domain={
     SEARCH:'/search',
-    SELECT:'/select'
+    SELECT:'/select',
+    INIT:'/init'
 }
 export default domain
