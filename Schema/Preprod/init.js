@@ -38,26 +38,7 @@ const init = {
                 },
               },
             },
-          ],  locations: [
-            {
-              id: "f13873c1-810d-4f2b-ba54-5edcec9f0e4a",
-              gps: "28.553440, 77.214241",
-              address: {
-                street: "7/6, August Kranti Marg",
-                locality: "Siri Fort Institutional Area, Siri Fort",
-                city: "New Delhi",
-                state: "Delhi",
-                area_code: "110049",
-              },
-              circle: {
-                gps: "30.745554,76.653711",
-                radius: {
-                  unit: "km",
-                  value: "10",
-                },
-              },
-            },
-          ],
+          ], 
       },
       items: [
         {
