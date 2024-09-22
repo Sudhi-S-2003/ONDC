@@ -4,6 +4,6 @@ const domain={
     INIT:'/init',
     CONFIRM:'/confirm',
     STATUS:'/status',
-    
+    CANCEL:'/cancel'
 }
 export default domain
