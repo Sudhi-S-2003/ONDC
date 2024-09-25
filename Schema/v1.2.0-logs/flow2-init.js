@@ -10,16 +10,15 @@ const search = {
     bap_uri: process.env.BAP_URL,
     bpp_uri: "https://ondc-mock-server-dev.thewitslab.com/seller",
     bpp_id: "ondc-mock-server-dev.thewitslab.com",
-    transaction_id: transactionId,
-    message_id: messageId,
+    transaction_id: "23a11106-bbb7-4d7e-ba32-61dcddacfc9e",
+    message_id: "8293fcb4-bf04-42dc-a0da-1707fbbe5abf",
     timestamp: isoTimestamp,
     ttl: "PT30S",
   },
   message: {
     order: {
       provider: {
-        id: "pramaan.ondc.org/alpha/mock-server",
-
+        id: "ondc-mock-server-dev.thewitslab.com",
         locations: [
           {
             id: "f13873c1-810d-4f2b-ba54-5edcec9f0e4a",
@@ -28,20 +27,18 @@ const search = {
       },
       items: [
         {
-          id: "fe3467e7-2104-46f3-9acf-10a65b0ad75d",
+          id: "4a6aca77-bf00-432c-8844-e0068eaa3e65",
           quantity: {
             count: 4,
           },
           location_id: "f13873c1-810d-4f2b-ba54-5edcec9f0e4a",
-          fulfillment_id: "0a4a6c37-7622-46b9-a501-2b48527f4a3e",
         },
         {
-          id: "903b94ab-7605-4dd4-b0ff-d9ac92d3dd0e",
+          id: "6fa942d6-3137-48b6-9fb9-4a3b26937b34",
           quantity: {
             count: 3,
           },
           location_id: "f13873c1-810d-4f2b-ba54-5edcec9f0e4a",
-          fulfillment_id: "0a4a6c37-7622-46b9-a501-2b48527f4a3e",
         },
       ],
       billing: {
