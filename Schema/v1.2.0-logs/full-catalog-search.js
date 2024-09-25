@@ -1,5 +1,5 @@
 import { isoTimestamp, messageId, transactionId } from "../../Unique/id.js";
-const status = {
+const search = {
   context: {
     domain: "ONDC:RET12",
     action: "search",
@@ -14,7 +14,15 @@ const status = {
     ttl: "PT30S",
   },
   message: {
-    order_id:"2024-09-22-100990",
+    intent: {
+      fulfillment: {
+        type: "Delivery",
+      },
+      payment: {
+        "@ondc/org/buyer_app_finder_fee_type": "percent",
+        "@ondc/org/buyer_app_finder_fee_amount": "3",
+      },
+    },
   },
 };
-export default status;
+export default search;
