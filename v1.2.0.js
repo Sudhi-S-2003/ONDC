@@ -3,11 +3,11 @@ import { createAuthorizationHeader } from "./cryptic.js";
 import dotenv from "dotenv";
 dotenv.config();
 const ONDC_SEARCH_URL = (await import('./Url/v1.2.0-url.js')).default;
-const ONDC_DOMAINS=(await import("./Url/Domain.js")).default.STATUS;
+const ONDC_DOMAINS=(await import("./Url/Domain.js")).default.CANCEL;
 console.log(ONDC_SEARCH_URL,ONDC_DOMAINS)
 const makeSearchRequest = async () => {
   try {
-    const requestPayload = (await import('./Schema/v1.2.0-logs/flow2-live-status.js')).default
+    const requestPayload = (await import('./Schema/v1.2.0-logs/flow-4-cancel.js')).default
     console.log(requestPayload)
     if (!process.env.BAP_ID || !process.env.BAP_URL) {
       throw new Error("Missing BAP_ID or BAP_URL in environment variables");
